@@ -64,19 +64,19 @@ class ChangeResolverTest {
     void should_return_changed_matches_for_same_type_using_default_change_decider() {
         //  setup
 
-        List<Pair<Integer, String>> original = List.of(new Pair<>(1, "one"), new Pair<>(2, "two"), new Pair<>(3, "three"), new Pair<>(4, "four"));
+        List<Tuple<Integer, String>> original = List.of(new Tuple<>(1, "one"), new Tuple<>(2, "two"), new Tuple<>(3, "three"), new Tuple<>(4, "four"));
 
-        List<Pair<Integer, String>> incoming = List.of(new Pair<>(1, "one"), new Pair<>(2, "too"), new Pair<>(3, "three"), new Pair<>(4, "for"));
+        List<Tuple<Integer, String>> incoming = List.of(new Tuple<>(1, "one"), new Tuple<>(2, "too"), new Tuple<>(3, "three"), new Tuple<>(4, "for"));
 
         //  execute
-        ChangeResolver.Changes<Pair<Integer, String>, Pair<Integer, String>> changes = ChangeResolver.<Pair<Integer, String>, Integer>ofSameType(Pair::x)
+        ChangeResolver.Changes<Tuple<Integer, String>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, String>, Integer>ofSameType(Tuple::x)
                 .resolve(original, incoming);
 
-        List<Pair<Integer, String>> added = changes.added().toList();
+        List<Tuple<Integer, String>> added = changes.added().toList();
 
-        List<Pair<Integer, String>> removed = changes.removed().toList();
+        List<Tuple<Integer, String>> removed = changes.removed().toList();
 
-        List<Match<Pair<Integer, String>, Pair<Integer, String>>> changed = changes
+        List<Match<Tuple<Integer, String>, Tuple<Integer, String>>> changed = changes
                 .altered()
                 .toList();
 
@@ -103,19 +103,19 @@ class ChangeResolverTest {
     void should_return_changed_matches_for_same_type_using_provided_change_decider() {
         //  setup
 
-        List<Pair<Integer, String>> original = List.of(new Pair<>(1, "one"), new Pair<>(2, "two"), new Pair<>(3, "three"), new Pair<>(4, "four"));
+        List<Tuple<Integer, String>> original = List.of(new Tuple<>(1, "one"), new Tuple<>(2, "two"), new Tuple<>(3, "three"), new Tuple<>(4, "four"));
 
-        List<Pair<Integer, String>> incoming = List.of(new Pair<>(1, "one"), new Pair<>(2, "too"), new Pair<>(3, "three"), new Pair<>(4, "for"));
+        List<Tuple<Integer, String>> incoming = List.of(new Tuple<>(1, "one"), new Tuple<>(2, "too"), new Tuple<>(3, "three"), new Tuple<>(4, "for"));
 
         //  execute
-        ChangeResolver.Changes<Pair<Integer, String>, Pair<Integer, String>> changes = ChangeResolver.<Pair<Integer, String>, Integer>ofSameType(Pair::x)
+        ChangeResolver.Changes<Tuple<Integer, String>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, String>, Integer>ofSameType(Tuple::x)
                 .resolve(original, incoming);
 
-        List<Pair<Integer, String>> added = changes.added().toList();
+        List<Tuple<Integer, String>> added = changes.added().toList();
 
-        List<Pair<Integer, String>> removed = changes.removed().toList();
+        List<Tuple<Integer, String>> removed = changes.removed().toList();
 
-        List<Match<Pair<Integer, String>, Pair<Integer, String>>> changed = changes
+        List<Match<Tuple<Integer, String>, Tuple<Integer, String>>> changed = changes
                 .altered((left, right) -> !Objects.equals(right.y(), left.y()))
                 .toList();
 
@@ -123,27 +123,27 @@ class ChangeResolverTest {
         assertThat(added).isEmpty();
         assertThat(removed).isEmpty();
         assertThat(changed).hasSize(2)
-                .contains(Match.of(new Pair<>(2, "two"), new Pair<>(2, "too")))
-                .contains(Match.of(new Pair<>(4, "four"), new Pair<>(4, "for")));
+                .contains(Match.of(new Tuple<>(2, "two"), new Tuple<>(2, "too")))
+                .contains(Match.of(new Tuple<>(4, "four"), new Tuple<>(4, "for")));
     }
 
     @Test
     void should_return_changed_matches_for_differing_types() {
         //  setup
 
-        List<Pair<Integer, Integer>> original = List.of(new Pair<>(1, 1), new Pair<>(2, 2), new Pair<>(3, 3), new Pair<>(4, 4));
+        List<Tuple<Integer, Integer>> original = List.of(new Tuple<>(1, 1), new Tuple<>(2, 2), new Tuple<>(3, 3), new Tuple<>(4, 4));
 
-        List<Pair<Integer, String>> incoming = List.of(new Pair<>(1, "1"), new Pair<>(2, "two"), new Pair<>(3, "3"), new Pair<>(4, "four"));
+        List<Tuple<Integer, String>> incoming = List.of(new Tuple<>(1, "1"), new Tuple<>(2, "two"), new Tuple<>(3, "3"), new Tuple<>(4, "four"));
 
         //  execute
-        ChangeResolver.Changes<Pair<Integer, Integer>, Pair<Integer, String>> changes = ChangeResolver.<Pair<Integer, Integer>, Pair<Integer, String>, Integer>ofDifferingTypes(Pair::x, Pair::x)
+        ChangeResolver.Changes<Tuple<Integer, Integer>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, Integer>, Tuple<Integer, String>, Integer>ofDifferingTypes(Tuple::x, Tuple::x)
                 .resolve(original, incoming);
 
-        List<Pair<Integer, String>> added = changes.added().toList();
+        List<Tuple<Integer, String>> added = changes.added().toList();
 
-        List<Pair<Integer, Integer>> removed = changes.removed().toList();
+        List<Tuple<Integer, Integer>> removed = changes.removed().toList();
 
-        List<Match<Pair<Integer, Integer>, Pair<Integer, String>>> changed = changes
+        List<Match<Tuple<Integer, Integer>, Tuple<Integer, String>>> changed = changes
                 .altered((left, right) -> !Objects.equals(right.y(), String.valueOf(left.y())))
                 .toList();
 
@@ -151,8 +151,8 @@ class ChangeResolverTest {
         assertThat(added).isEmpty();
         assertThat(removed).isEmpty();
         assertThat(changed).hasSize(2)
-                .contains(Match.of(new Pair<>(2, 2), new Pair<>(2, "two")))
-                .contains(Match.of(new Pair<>(4, 4), new Pair<>(4, "four")));
+                .contains(Match.of(new Tuple<>(2, 2), new Tuple<>(2, "two")))
+                .contains(Match.of(new Tuple<>(4, 4), new Tuple<>(4, "four")));
     }
 
 }

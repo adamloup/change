@@ -4,9 +4,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.github.adamloup</groupId>
-    <artifactId>change</artifactId>
+    <groupId>com.github.adamloup.change</groupId>
+    <artifactId>parent</artifactId>
     <version>${revision}</version>
+    <packaging>pom</packaging>
 
     <properties>
         <revision>1.0-SNAPSHOT</revision>
@@ -15,20 +16,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.assertj</groupId>
-            <artifactId>assertj-core</artifactId>
-            <version>3.23.1</version>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
+    <modules>
+        <module>core</module>
+        <module>benchmark</module>
+    </modules>
 </project>
