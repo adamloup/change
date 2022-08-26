@@ -9,6 +9,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import change.Match.OnlyLeft;
+
+import change.Match.OnlyRight;
+
+import change.Match.Both;
+
 public class ChangeResolver<L, R, I> {
 
     public static <X, Y, I> ChangeResolver<X, Y, I> ofDifferingTypes(
@@ -76,7 +82,7 @@ public class ChangeResolver<L, R, I> {
         }
 
         private static <L, R> Predicate<Match<L, R>> changed(final BiFunction<L, R, Boolean> hasChange) {
-            return match -> hasChange.apply(match.left(), match.right());
+            return match -> (match instanceof Both<L, R> both) ? both.withBoth(hasChange) : false;
         }
 
         private final Collection<Match<L, R>> matches;
@@ -88,26 +94,27 @@ public class ChangeResolver<L, R, I> {
         public Stream<R> added() {
             return this.matches
                     .stream()
-                    .filter(Match.onlyRight())
-                    .map(Match::right);
+                    .filter(OnlyRight.class::isInstance)
+                    .map(m -> ((OnlyRight<L,R>) m).right());
         }
 
-        public Stream<Match<L, R>> altered() {
+        public Stream<Both<L, R>> altered() {
             return altered(Changes::notEqual);
         }
 
-        public Stream<Match<L, R>> altered(final BiFunction<L, R, Boolean> hasChange) {
+        public Stream<Both<L, R>> altered(final BiFunction<L, R, Boolean> hasChange) {
             return this.matches
                     .stream()
-                    .filter(Match.<L, R>both().and(changed(hasChange)))
+                    .filter(changed(hasChange))
+                    .map(c -> (Both<L, R>) c)
                     .distinct();
         }
 
         public Stream<L> removed() {
             return matches
                     .stream()
-                    .filter(Match.onlyLeft())
-                    .map(Match::left);
+                    .filter(OnlyLeft.class::isInstance)
+                    .map(m -> ((OnlyLeft<L,R>) m).left());
         }
 
 

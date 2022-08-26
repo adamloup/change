@@ -14,12 +14,12 @@ import java.util.stream.IntStream;
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 @State(Scope.Benchmark)
 @Fork(value = 1, warmups = 2)
-public class ChangeResolverAddSameTypeBenchmark {
+public class ChangeResolverRemovedSameTypeBenchmark {
 
     public static void main(String[] args) throws RunnerException {
 
         Options options = new OptionsBuilder()
-                .include(ChangeResolverAddSameTypeBenchmark.class.getSimpleName())
+                .include(ChangeResolverRemovedSameTypeBenchmark.class.getSimpleName())
                 .forks(1)
                 .build();
 
@@ -46,13 +46,10 @@ public class ChangeResolverAddSameTypeBenchmark {
                 .toList();
     }
 
-    @Benchmark
-    public void baseline() {
 
-    }
 
     @Benchmark
-    public void add_same_type() {
+    public void removed_same_type() {
        ChangeResolver.<Pair<Integer, String>, Integer>ofSameType(Pair::x)
                 .resolve(original, incoming);
     }

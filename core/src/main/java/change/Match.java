@@ -1,21 +1,11 @@
 package change;
 
+import java.util.Objects;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Predicate;
+import java.util.function.Consumer;
 
 public sealed interface Match<L, R> {
-
-    static <L, R> Predicate<Match<L, R>> onlyRight() {
-        return match -> match.left() == null && match.right() != null;
-    }
-
-    static <L, R> Predicate<Match<L, R>> both() {
-        return match -> match.left() != null && match.right() != null;
-    }
-
-    static <L, R> Predicate<Match<L, R>> onlyLeft() {
-        return match -> match.left() != null && match.right() == null;
-    }
 
     static <L, R> Match<L, R> of(L left, R right) {
         if (left != null && right != null) {
@@ -31,23 +21,30 @@ public sealed interface Match<L, R> {
 
     record OnlyRight<L, R>(R right) implements Match<L, R> {
 
+        public void usingRight(final Consumer<R> consumer) {
+            Objects.requireNonNull(consumer, "A consumer for right is required.")
+                    .accept(right);
+        }
     }
 
     record OnlyLeft<L, R>(L left) implements Match<L, R> {
+
+        public void usingLeft(final Consumer<L> consumer) {
+            Objects.requireNonNull(consumer, "A consumer for left is required.")
+                    .accept(left);
+        }
     }
 
     record Both<L, R>(L left, R right) implements Match<L, R> {
+
+        public void usingBoth(final BiConsumer<L, R> consumer) {
+            Objects.requireNonNull(consumer, "A consumer for left and right is required.")
+                    .accept(left, right);
+        }
+
+        public <T> T withBoth(final BiFunction<L, R, T> function) {
+            return function.apply(left(), right());
+        }
     }
 
-    default L left() {
-        return null;
-    }
-
-    default R right() {
-        return null;
-    }
-
-    default <T> T withBoth(final BiFunction<L, R, T> function) {
-        return function.apply(left(), right());
-    }
 }
