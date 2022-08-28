@@ -1,81 +1,47 @@
 package change;
 
+import change.Match.Both;
+import change.Match.OnlyLeft;
+import change.Match.OnlyRight;
+
 import java.util.Collection;
-import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import change.Match.OnlyLeft;
-
-import change.Match.OnlyRight;
-
-import change.Match.Both;
-
 public class ChangeResolver<L, R, I> {
+
 
     public static <X, Y, I> ChangeResolver<X, Y, I> ofDifferingTypes(
             final Function<X, I> leftToIdentifier,
             final Function<Y, I> rightToIdentifier
     ) {
-        return new ChangeResolver<>(leftToIdentifier, rightToIdentifier);
+        MatchResolver<X, Y, I> resolver = new DefaultMatchResolver<>(leftToIdentifier, rightToIdentifier);
+        return new ChangeResolver<>(resolver);
+    }
+
+    public static <X> ChangeResolver<X, X, X> ofSameType() {
+        return ofSameType(Function.identity());
     }
 
     public static <V, I> ChangeResolver<V, V, I> ofSameType(final Function<V, I> toIdentifier) {
-        return new ChangeResolver<>(toIdentifier, toIdentifier);
+        MatchResolver<V, V, I> resolver = new DefaultMatchResolver<>(toIdentifier, toIdentifier);
+        return new ChangeResolver<>(resolver);
     }
 
-    private final Function<L, I> leftToIdentifier;
-    private final Function<R, I> rightToIdentifier;
+    private final MatchResolver<L, R, I> resolver;
 
-    private ChangeResolver(
-            final Function<L, I> leftToIdentifier,
-            final Function<R, I> rightToIdentifier
-    ) {
-        this.leftToIdentifier = leftToIdentifier;
-        this.rightToIdentifier = rightToIdentifier;
+    private ChangeResolver(final MatchResolver<L, R, I> resolver) {
+        this.resolver = resolver;
     }
 
     public Changes<L, R> resolve(final Collection<L> left, final Collection<R> right) {
-        Map<I, L> leftMap = resolveLeft(left);
-
-        Map<I, R> rightMap = resolveRight(right);
-
-        return resolveMatches(leftMap, rightMap).collect(
-                Collectors.collectingAndThen(
-                        Collectors.toUnmodifiableList(),
-                        Changes::new
-                )
-        );
+        return new Changes<>(resolver.resolve(left, right).toList());
     }
 
-    private Stream<Match<L, R>> resolveMatches(
-            final Map<I, L> lefts,
-            final Map<I, R> rights
-    ) {
-        return Stream.concat(
-                lefts.entrySet().stream()
-                        .map(e -> Match.of(e.getValue(), rights.get(e.getKey()))),
-                rights.entrySet().stream()
-                        .map(e -> Match.of(lefts.get(e.getKey()), e.getValue()))
-        );
-    }
-
-    private Map<I, R> resolveRight(final Collection<R> right) {
-        return right.stream().collect(Collectors
-                .toMap(rightToIdentifier, Function.identity()));
-    }
-
-    private Map<I, L> resolveLeft(final Collection<L> left) {
-        return left.stream().collect(Collectors
-                .toMap(leftToIdentifier, Function.identity()));
-
-    }
-
-    public static class Changes<L, R> {
+    public static final class Changes<L, R> {
 
         private static <X, Y> Boolean notEqual(final X x, final Y y) {
             return !Objects.equals(x, y);
@@ -95,7 +61,7 @@ public class ChangeResolver<L, R, I> {
             return this.matches
                     .stream()
                     .filter(OnlyRight.class::isInstance)
-                    .map(m -> ((OnlyRight<L,R>) m).right());
+                    .map(m -> ((OnlyRight<L, R>) m).right());
         }
 
         public Stream<Both<L, R>> altered() {
@@ -114,7 +80,7 @@ public class ChangeResolver<L, R, I> {
             return matches
                     .stream()
                     .filter(OnlyLeft.class::isInstance)
-                    .map(m -> ((OnlyLeft<L,R>) m).left());
+                    .map(m -> ((OnlyLeft<L, R>) m).left());
         }
 
 
