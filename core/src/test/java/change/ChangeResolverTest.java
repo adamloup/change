@@ -22,7 +22,7 @@ class ChangeResolverTest {
         List<String> incoming = List.of("one", "two", "three", "four", "five", "six", "seven");
 
         //  execute
-        ChangeResolver.Changes<String, String> changes = ChangeResolver.<String, String>ofSameType(Function.identity())
+        Changes<String, String> changes = ChangeResolver.<String>simple()
                 .resolve(original, incoming);
 
         //  verify
@@ -48,7 +48,7 @@ class ChangeResolverTest {
         List<String> incoming = List.of("one", "two", "three", "four", "five", "six", "seven");
 
         //  execute
-        ChangeResolver.Changes<String, String> changes = ChangeResolver.<String, String>ofSameType(Function.identity())
+        Changes<String, String> changes = ChangeResolver.<String, String>ofSameType(Function.identity())
                 .resolve(original, incoming);
 
         //  verify
@@ -71,7 +71,7 @@ class ChangeResolverTest {
         List<String> incoming = List.of();
 
         //  execute
-        ChangeResolver.Changes<String, String> changes = ChangeResolver.<String, String>ofSameType(Function.identity())
+        Changes<String, String> changes = ChangeResolver.<String, String>ofSameType(Function.identity())
                 .resolve(original, incoming);
 
         //  verify
@@ -98,7 +98,7 @@ class ChangeResolverTest {
         List<String> incoming = List.of("one", "three", "five", "seven");
 
         //  execute
-        ChangeResolver.Changes<String, String> changes = ChangeResolver.<String, String>ofSameType(Function.identity())
+        Changes<String, String> changes = ChangeResolver.<String, String>ofSameType(Function.identity())
                 .resolve(original, incoming);
 
         //  verify
@@ -123,7 +123,7 @@ class ChangeResolverTest {
         List<Tuple<Integer, String>> incoming = List.of(new Tuple<>(1, "one"), new Tuple<>(2, "too"), new Tuple<>(3, "three"), new Tuple<>(4, "for"));
 
         //  execute
-        ChangeResolver.Changes<Tuple<Integer, String>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, String>, Integer>ofSameType(Tuple::x)
+        Changes<Tuple<Integer, String>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, String>, Integer>ofSameType(Tuple::x)
                 .resolve(original, incoming);
 
 
@@ -155,7 +155,7 @@ class ChangeResolverTest {
         List<Tuple<Integer, String>> incoming = List.of(new Tuple<>(1, "one"), new Tuple<>(2, "too"), new Tuple<>(3, "three"), new Tuple<>(4, "for"));
 
         //  execute
-        ChangeResolver.Changes<Tuple<Integer, String>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, String>, Integer>ofSameType(Tuple::x)
+        Changes<Tuple<Integer, String>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, String>, Integer>ofSameType(Tuple::x)
                 .resolve(original, incoming);
 
         BiFunction<Tuple<Integer, String>, Tuple<Integer, String>, Boolean> condition = (left, right) -> !Objects.equals(right.y(), left.y());
@@ -193,7 +193,7 @@ class ChangeResolverTest {
         List<Tuple<Integer, String>> incoming = List.of(new Tuple<>(1, "1"), new Tuple<>(2, "two"), new Tuple<>(3, "3"), new Tuple<>(4, "four"));
 
         //  execute
-        ChangeResolver.Changes<Tuple<Integer, Integer>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, Integer>, Tuple<Integer, String>, Integer>ofDifferingTypes(Tuple::x, Tuple::x)
+        Changes<Tuple<Integer, Integer>, Tuple<Integer, String>> changes = ChangeResolver.<Tuple<Integer, Integer>, Tuple<Integer, String>, Integer>ofDifferingTypes(Tuple::x, Tuple::x)
                 .resolve(original, incoming);
 
         BiFunction<Tuple<Integer, Integer>, Tuple<Integer, String>, Boolean> condition = (left, right) -> !Objects.equals(right.y(), String.valueOf(left.y()));

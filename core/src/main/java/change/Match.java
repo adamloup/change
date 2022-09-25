@@ -22,7 +22,7 @@ public sealed interface Match<L, R> {
     record OnlyRight<L, R>(R right) implements Match<L, R> {
 
         public void usingRight(final Consumer<R> consumer) {
-            Objects.requireNonNull(consumer, "A consumer for right is required.")
+            Objects.requireNonNull(consumer, "A consumer is required.")
                     .accept(right);
         }
     }
@@ -30,7 +30,7 @@ public sealed interface Match<L, R> {
     record OnlyLeft<L, R>(L left) implements Match<L, R> {
 
         public void usingLeft(final Consumer<L> consumer) {
-            Objects.requireNonNull(consumer, "A consumer for left is required.")
+            Objects.requireNonNull(consumer, "A consumer is required.")
                     .accept(left);
         }
     }
